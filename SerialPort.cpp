@@ -48,7 +48,13 @@ const char *SerialPort::readString() const{
     out[numOfBytes - 1] = '\0'; //replace \n with \0
 
     //store strings for destructor garbage collection
+    //if the size becomes execessive, clear the list
     #ifdef STORE_STRINGS
+    if(m_strList.size() > 1000){
+        for(char * elem : m_strList)
+            free((void *) elem);
+        m_strList.clear();
+    }
     m_strList.push_back(out);
     #endif
 

@@ -4,7 +4,7 @@
 */
 #include <list>
 
-//for frees in the destructor (not a good idea if running continuously)
+//for frees in the destructor
 #define STORE_STRINGS
 
 class SerialPort{
@@ -14,7 +14,7 @@ public:
     ~SerialPort();
 
     //return a string of characters
-    //if STORE_STRINGS is defines then returned strings are freed at the destructor
+    //if STORE_STRINGS is defined then returned strings are freed at the destructor
     const char *readString() const;
     //returns an int
     int readInt() const;

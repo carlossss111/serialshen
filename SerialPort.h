@@ -2,6 +2,10 @@
 *   Used to read a line from the serial port ending with '\n'.
 *   Daniel Robinson 2022
 */
+#include <list>
+
+//for frees in the destructor (not a good idea if running continuously)
+#define STORE_STRINGS
 
 class SerialPort{
 public:
@@ -9,8 +13,10 @@ public:
     SerialPort(const char *deviceName);
     ~SerialPort();
 
-    //return a string of characters ended by a newline
+    //return a string of characters
+    //if STORE_STRINGS is defines then returned strings are freed at the destructor
     const char *readString();
+    //returns an int
     int readInt();
 
 private:
@@ -21,4 +27,7 @@ private:
 
     //file descriptor
     int m_serial;
+
+    //string list
+    std::list<char *> m_strList;
 };

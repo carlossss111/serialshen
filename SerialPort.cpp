@@ -10,6 +10,7 @@
 #include "SerialPort.h"
 
 SerialPort::SerialPort(const char *deviceName){
+    //call helper functions
     if(open(deviceName) != 0)
         exit(1);
     if(configure() != 0)
@@ -17,7 +18,14 @@ SerialPort::SerialPort(const char *deviceName){
 }
 
 SerialPort::~SerialPort(){
+    //close the file descriptor
     close();
+
+    //clean up the list of strings read
+    #ifdef STORE_STRINGS
+    for(char * elem : m_strList)
+        free((void *) elem);
+    #endif
 }
 
 const char *SerialPort::readString(){
@@ -32,9 +40,18 @@ const char *SerialPort::readString(){
     }
 
     //copy into smaller specifically sized buff
-    out = (char *) malloc(numOfBytes);
+    if(!(out = (char *) malloc(numOfBytes))){
+        fprintf(stderr,"Error from malloc()\n");
+        exit(1);
+    }
     memcpy(out, buffer, numOfBytes);
     out[numOfBytes - 1] = '\0'; //replace \n with \0
+
+    //store strings for destructor garbage collection
+    #ifdef STORE_STRINGS
+    m_strList.push_back(out);
+    #endif
+
     return out;
 }
 
@@ -110,7 +127,7 @@ int SerialPort::configure(){
 
 int SerialPort::close(){
     if(::close(m_serial)){
-        fprintf(stderr, "Error from close()");
+        fprintf(stderr, "Error from close()\n");
         return 1;
     }
     return 0;
@@ -119,10 +136,8 @@ int SerialPort::close(){
 int main(int argc, char **argv){
     SerialPort mySerial = "/dev/ttyACM0";
 
-    const char *str = mySerial.readString();
-    printf("%s\n",str);
-    free((void *)str);
+    for(int i = 0; i < 100; i++)
+        printf("%s\n", mySerial.readString());
 
-    printf("%d\n", mySerial.readInt());
     return 0;
 }

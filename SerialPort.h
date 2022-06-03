@@ -15,9 +15,9 @@ public:
 
     //return a string of characters
     //if STORE_STRINGS is defines then returned strings are freed at the destructor
-    const char *readString();
+    const char *readString() const;
     //returns an int
-    int readInt();
+    int readInt() const;
 
 private:
     //called by constructors and destructors
@@ -29,5 +29,5 @@ private:
     int m_serial;
 
     //string list
-    std::list<char *> m_strList;
+    mutable std::list<char *> m_strList;
 };

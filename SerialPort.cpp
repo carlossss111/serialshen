@@ -28,7 +28,7 @@ SerialPort::~SerialPort(){
     #endif
 }
 
-const char *SerialPort::readString(){
+const char *SerialPort::readString() const{
     char buffer[1024];
     char *out;
 
@@ -55,7 +55,7 @@ const char *SerialPort::readString(){
     return out;
 }
 
-int SerialPort::readInt(){
+int SerialPort::readInt() const{
     //read as a string
     char buffer[sizeof(int) + 1];
     int numOfBytes = read(m_serial, &buffer, sizeof(buffer));
@@ -126,18 +126,10 @@ int SerialPort::configure(){
 }
 
 int SerialPort::close(){
+    //close the file descriptor
     if(::close(m_serial)){
         fprintf(stderr, "Error from close()\n");
         return 1;
     }
-    return 0;
-}
-
-int main(int argc, char **argv){
-    SerialPort mySerial = "/dev/ttyACM0";
-
-    for(int i = 0; i < 100; i++)
-        printf("%s\n", mySerial.readString());
-
     return 0;
 }

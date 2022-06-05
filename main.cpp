@@ -4,6 +4,8 @@
 
 #include "SerialPort.h"
 
+#define DEFAULT_PORT "/dev/ttyACM0"
+
 struct tenBitfield{
     //split a 32bit integer into 10 bits each, 0b00[a1*ten][a2*ten][a3*ten]
     tenBitfield operator= (const uint32_t bitsIn){
@@ -21,7 +23,7 @@ struct tenBitfield{
 
 int main(int argc, char **argv){
     //open serial port
-    SerialPort mySerial = "/dev/ttyACM0";
+    SerialPort mySerial = (argc > 1) ? argv[1] : DEFAULT_PORT;
 
     //read the 4 bytes and get the seperated information
     tenBitfield numField;

@@ -16,8 +16,8 @@ public:
     //return a string of characters
     //if STORE_STRINGS is defined then returned strings are freed at the destructor
     const char *readString() const;
-    //returns an int
-    int readInt() const;
+    //returns a 32 bit int
+    uint32_t readInt32() const;
 
 private:
     //called by constructors and destructors

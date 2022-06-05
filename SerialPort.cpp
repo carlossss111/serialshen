@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include <fcntl.h>
 #include <errno.h>
@@ -61,9 +62,9 @@ const char *SerialPort::readString() const{
     return out;
 }
 
-int SerialPort::readInt() const{
+uint32_t SerialPort::readInt32() const{
     //read as a string
-    char buffer[sizeof(int) + 1];
+    char buffer[11]; //max num of digits + '\n'
     int numOfBytes = read(m_serial, &buffer, sizeof(buffer));
     if(!numOfBytes){
         fprintf(stderr,"Error from read(): Timed out.\n");
@@ -71,7 +72,8 @@ int SerialPort::readInt() const{
     }
 
     //convert into an int
-    return atoi(buffer);
+    buffer[10] = '\0';
+    return static_cast<uint32_t>(strtoul(buffer, NULL, 10));
 }
 
 int SerialPort::open(const char *deviceName){

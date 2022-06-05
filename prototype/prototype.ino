@@ -8,10 +8,10 @@
 
 //return 4 byte (32 bit) unsigned int in the form 0b00[lBits][mBits][rBits]
 uint32_t constructMessage(int lBits, int mBits, int rBits){
-  uint32_t mOut;
-  mOut = lBits << 10; //leftshift 10 leftmost bits
+  uint32_t mOut = 0;
+  mOut = (mOut | lBits) << 10; //leftshift 10 leftmost bits
   mOut = (mOut | mBits) << 10; //OR the middle bits in and leftshift them
-  mOut = mOut | rBits; //OR the right bits in
+  mOut = (mOut | rBits); //OR the right bits in
   return mOut;
 }
 
@@ -32,7 +32,8 @@ void loop(){
 
   //construct a 4 byte message,
   //send 5 bytes (4 byte int + newline character)
-  Serial.println(constructMessage(a1, a2, a3));
+  Serial.print(constructMessage(a1,a2,a3));
+  Serial.print('\n');
   
   //wait
   delay(LOOP_INTERVAL_MS);

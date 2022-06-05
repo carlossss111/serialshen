@@ -5,17 +5,11 @@
 #include "SerialPort.h"
 
 struct tenBitfield{
-    //split a 32bit integer into 10 bits each.
-    tenBitfield operator= (const uint32_t rhs){
-        //LEFTMOST - first ten bits after "0b00"
-        //right shifts 20 places to only keep the 12 bits that were originally leftmost
-        a1 = rhs >> 20;
-        //MIDDLE - next ten bits
-        //left shifts 12 places to remove left bits then shift remaining bits to the far right
-        a2 = (rhs << 12) >> 22;
-        //RIGHT - last ten bits
-        //left shifts 22 places to remove all left bits then shift remaining bits to the far right
-        a3 = (rhs << 22) >> 22;
+    //split a 32bit integer into 10 bits each, 0b00[a1*ten][a2*ten][a3*ten]
+    tenBitfield operator= (const uint32_t bitsIn){
+        a1 = bitsIn >> 20; //LEFTMOST - first ten bits after "0b00"
+        a2 = bitsIn >> 10; //MIDDLE - next ten bits
+        a3 = bitsIn; //RIGHT - last ten bits
         return *this;
     }   
 

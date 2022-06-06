@@ -1,11 +1,17 @@
-#define F_CPU 16000000UL    //clock speed in Hz
-#define __AVR_ATmega328P__  //vscode highlighting
-
 #include <stdio.h>
 #include <stdint.h>
 
-#include <avr/io.h>         //io ports
-#include <util/delay.h>     //_delay_ms() function
+#define F_CPU 16000000UL    //clock speed in Hz
+#define __AVR_ATmega328P__  //vscode highlighting
+
+#include <avr/io.h> //io ports
+#include <util/delay.h> //_delay_ms() function
+
+#define LEFT_PIN ADC0D // left pin to read
+#define MIDDLE_PIN ADC2D //right pin to read
+#define RIGHT_PIN ADC4D //right pin to read
+
+#define LOOP_INTERVAL_MS 250 //delay in milliseconds between each main loop
 
 //configure the baud rate, transmit and formatting on startup
 void configureSerial(uint32_t baud){
@@ -78,8 +84,8 @@ void configureADC(){
     ADCSRA |= (1 << ADEN);
 }
 
+//read the analog to digital converter, return a value between 0 and 1023
 uint16_t readADC(uint8_t pin){
-    _delay_ms(100);
     /* SELECT PIN TO READ
     *  Clear the selection
     *  Shift in the correct pin to read into the first 4 bits
@@ -102,6 +108,15 @@ uint16_t readADC(uint8_t pin){
     return result;
 }
 
+//return 4 byte (32 bit) unsigned int in the form 0b00[lBits][mBits][rBits]
+uint32_t constructMessage(int lBits, int mBits, int rBits){
+    uint32_t mOut = 0;
+    mOut = (mOut | lBits) << 10; //leftshift 10 leftmost bits
+    mOut = (mOut | mBits) << 10; //OR the middle bits in and leftshift them
+    mOut = (mOut | rBits); //OR the right bits in
+    return mOut;
+}
+
 int main(int argc, char **argv){
 
     //configure analog pin reading
@@ -114,14 +129,15 @@ int main(int argc, char **argv){
     FILE f_out;
     configurePrintf(&f_out);
 
-    int i = 0;
     for(;;){
-        //send a serial message
-        printf("%d ",readADC(ADC4D));
-        printf("- %d\n",readADC(ADC2D));
+        //send 5 byte serial message
+        int left = readADC(LEFT_PIN);
+        int middle = readADC(MIDDLE_PIN);
+        int right = readADC(RIGHT_PIN);
+        printf("%ld\n", constructMessage(left, middle, right));
 
         //busy waiting
-        _delay_ms(500);
+        _delay_ms(LOOP_INTERVAL_MS);
     }
 
     return 0;

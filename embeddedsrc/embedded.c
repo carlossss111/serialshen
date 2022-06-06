@@ -1,7 +1,9 @@
 #define F_CPU 16000000UL    //clock speed in Hz
 #define __AVR_ATmega328P__  //vscode highlighting
 
+#include <stdio.h>
 #include <stdint.h>
+
 #include <avr/io.h>         //io ports
 #include <util/delay.h>     //_delay_ms() function
 
@@ -33,9 +35,8 @@ void configureSerial(uint32_t baud){
     UCSR0C = (1 << UCSZ01 | 1 << UCSZ00);
 }
 
-//send a string through the serial port
-void sendSerial(const char * str){
-    int i = 0;
+//send a byte through the serial port
+int sendByte(const char byteOut){    
     /* SEND FRAME - page 159
     *  Loop through the string and wait while the transmitter is busy:
     *    - "1 << UDRE0" moves a bit to the position 5 (00100000)
@@ -43,11 +44,15 @@ void sendSerial(const char * str){
     *    - "!.." makes it wait while it is off
     *  Send 7 bits to the data register UDR0 (an ASCII character)
     */
-    while(str[i]){
-        while ( !(UCSR0A & (1 << UDRE0)) );
-        UDR0 = str[i];
-        i++;
-    }
+    while ( !(UCSR0A & (1 << UDRE0)) );
+    UDR0 = byteOut;
+}
+
+//configure stdout to point to the serial port
+int sput(char c, FILE *_) { return !sendByte(c); }
+void configurePrintf(FILE *fp){
+    fdev_setup_stream(fp, sput, NULL, _FDEV_SETUP_WRITE);
+    stdout = fp;
 }
 
 int main(int argc, char **argv){
@@ -55,9 +60,14 @@ int main(int argc, char **argv){
     //configure the serial port
     configureSerial(9600);
 
+    //configure printf
+    FILE f_out;
+    configurePrintf(&f_out);
+
+    int i = 0;
     for(;;){
         //send a serial message
-        sendSerial("Hello World\n");
+        printf("Hello World %d\n", i++);
 
         //busy waiting
         _delay_ms(500);

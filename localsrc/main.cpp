@@ -8,7 +8,7 @@
 
 struct tenBitfield{
     //split a 32bit integer into 10 bits each, 0b00[a1*ten][a2*ten][a3*ten]
-    tenBitfield operator= (const uint32_t bitsIn){
+    tenBitfield operator= (const uint32_t& bitsIn){
         a1 = bitsIn >> 20; //LEFTMOST - first ten bits after "0b00"
         a2 = bitsIn >> 10; //MIDDLE - next ten bits
         a3 = bitsIn; //RIGHT - last ten bits

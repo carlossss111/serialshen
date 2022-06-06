@@ -62,13 +62,11 @@ void configureADC(){
     */
     PRR &= ~(1 << PRADC);
 
-    /* SET REFERENCE VOLTAGE "AREF" TO Vcc-5V AND SET PIN TO READ - page 217
+    /* SET REFERENCE VOLTAGE "AREF" TO Vcc-5V - page 217
     *  Set the leftmost bits to '01'
-    *  Select the pin to read (ADC4)
     */
     ADMUX &= ~(1 << REFS1);
     ADMUX |= 1 << REFS0;
-    ADMUX |= ADC4D;
 
     /* SCALE RESULT - page 217
     *  ADC needs an input clock of between 50kHz to 200kH to handle 10 bit readings,
@@ -80,7 +78,15 @@ void configureADC(){
     ADCSRA |= (1 << ADEN);
 }
 
-uint16_t readADC(){
+uint16_t readADC(uint8_t pin){
+    _delay_ms(100);
+    /* SELECT PIN TO READ
+    *  Clear the selection
+    *  Shift in the correct pin to read into the first 4 bits
+    */
+    ADMUX &= ~0b1111;
+    ADMUX |= pin;
+
     /* START CONVERSION - page 218
     *  Enable bit to start ADC
     *  This bit returns to 0 after finishing automatically, so we wait for it to finish.
@@ -111,7 +117,8 @@ int main(int argc, char **argv){
     int i = 0;
     for(;;){
         //send a serial message
-        printf("%d\n",readADC());
+        printf("%d ",readADC(ADC4D));
+        printf("- %d\n",readADC(ADC2D));
 
         //busy waiting
         _delay_ms(500);

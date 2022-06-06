@@ -55,7 +55,51 @@ void configurePrintf(FILE *fp){
     stdout = fp;
 }
 
+//configure the analog to digital voltage converter
+void configureADC(){
+    /* POWER UP ADC - page 38
+    *  Clear the the bit in the power reduction register PRR.
+    */
+    PRR &= ~(1 << PRADC);
+
+    /* SET REFERENCE VOLTAGE "AREF" TO Vcc-5V AND SET PIN TO READ - page 217
+    *  Set the leftmost bits to '01'
+    *  Select the pin to read (ADC4)
+    */
+    ADMUX &= ~(1 << REFS1);
+    ADMUX |= 1 << REFS0;
+    ADMUX |= ADC4D;
+
+    /* SCALE RESULT - page 217
+    *  ADC needs an input clock of between 50kHz to 200kH to handle 10 bit readings,
+    *  divide the clockspeed by 8 with the following
+    */
+    ADCSRA |= (1 << ADPS0) | (1 << ADPS1);
+
+    /* Start the ADC */
+    ADCSRA |= (1 << ADEN);
+}
+
+uint16_t readADC(){
+    /* START CONVERSION - page 218
+    *  Enable bit to start ADC
+    *  This bit returns to 0 after finishing automatically, so we wait for it to finish.
+    */
+    ADCSRA |= (1 << ADSC);
+    while((ADCSRA & (1 << ADSC)));
+    
+    /* READ CONVERSION - page 219
+    *  Read 8 low bits from the ADCL register
+    *  Read 8 high bits from the ADCH register
+    */
+    uint16_t result = ADCL + (ADCH << 8);
+    return result;
+}
+
 int main(int argc, char **argv){
+
+    //configure analog pin reading
+    configureADC();
 
     //configure the serial port
     configureSerial(9600);
@@ -67,12 +111,11 @@ int main(int argc, char **argv){
     int i = 0;
     for(;;){
         //send a serial message
-        printf("Hello World %d\n", i++);
+        printf("%d\n",readADC());
 
         //busy waiting
         _delay_ms(500);
     }
 
-    
     return 0;
 }

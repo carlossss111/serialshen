@@ -11,7 +11,9 @@
 void Volume::setVolume(int app, int vol){
     if(0 > vol || vol > 100)
         return;
-        
+    if(!app)
+        return;
+
     char sysStr[42];
     sprintf(sysStr, "pactl set-sink-input-volume %d %d%%", app, vol);
     system(sysStr);

@@ -28,10 +28,21 @@ int main(int argc, char **argv){
         //read serial
         serialVals = mySerial.readInt32();
 
-        //set application volume
-        int app1 = myVolume.getApplicationNum("spotify");
-        printf("%d%%\n", toPercent(serialVals.a1, 1023));
-        myVolume.setVolume(app1, toPercent(serialVals.a1, 1023));        
+        //get app numbers (could change between loops)
+        int appIds[] 
+        = { myVolume.getApplicationNum("Discord"), 
+            myVolume.getApplicationNum("Firefox"), 
+            myVolume.getApplicationNum("Spotify") };
+
+        //set volumes
+        myVolume.setVolume(appIds[0], toPercent(serialVals.a1, 1023));
+        myVolume.setVolume(appIds[1], toPercent(serialVals.a2, 1023));
+        myVolume.setVolume(appIds[2], toPercent(serialVals.a3, 1023));
+        
+        //print volumes
+        printf("%d %d %d%%\n", toPercent(serialVals.a1, 1023),
+            toPercent(serialVals.a2, 1023), 
+            toPercent(serialVals.a3, 1023));  
     }
 
     return 0;

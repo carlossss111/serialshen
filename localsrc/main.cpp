@@ -25,8 +25,11 @@ int main(int argc, char **argv){
 
     //forever read the serial and adjust the volumes
     for(;;){
-        //read serial
-        serialVals = mySerial.readInt32();
+        //read serial (and exit on error, e.g. unplugged)
+        uint32_t rawVal = mySerial.readInt32();
+        if(rawVal == -1)
+            return 0;
+        serialVals = rawVal;
 
         //get app numbers (could change between loops)
         int appIds[] 

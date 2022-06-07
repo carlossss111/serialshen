@@ -40,7 +40,7 @@ int main(int argc, char **argv){
         myVolume.setVolume(appIds[2], toPercent(serialVals.a3, 1023));
         
         //print volumes
-        printf("%d %d %d%%\n", toPercent(serialVals.a1, 1023),
+        printf("%d%% %d%% %d%%\n", toPercent(serialVals.a1, 1023),
             toPercent(serialVals.a2, 1023), 
             toPercent(serialVals.a3, 1023));  
     }

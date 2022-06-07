@@ -5,8 +5,6 @@
 
 #include "Volume.h"
 
-#define charToInt(num) static_cast<int>(num - 48)
-
 //set the volume by providing a number between 0-100
 void Volume::setVolume(int app, int vol){
     if(0 > vol || vol > 100)
@@ -39,7 +37,8 @@ int Volume::getApplicationNum(const char* appName) const{
             fscanf(fp,"%s", word);
             if(strstr("Input", word)){
                 fscanf(fp,"%s", word);
-                sinkNum = charToInt(word[1]);
+                char *ptr = word; //skip first character '#'
+                sinkNum = atoi(++ptr);
             }
         }
 

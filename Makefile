@@ -1,8 +1,11 @@
 local_compile:
-	g++ -o bin/local.bin localsrc/main.cpp localsrc/SerialPort.cpp
+	g++ -o bin/local.bin localsrc/main.cpp localsrc/SerialPort.cpp localsrc/Volume.cpp
 
 local: local_compile
 	./bin/local.bin
+
+local_mem: local_compile
+	valgrind ./bin/local.bin
 
 embedded_compile:
 	avr-gcc -Os -mmcu=atmega328p -o bin/embedded.bin embeddedsrc/embedded.c

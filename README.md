@@ -20,7 +20,7 @@ make local_compile
 ## Circuit
 The easiest way to recreate this circuit is with an Arduino Uno, since it already connects the ATMEGA328P chip to a USB port and power. That said, there is no Arduino specific code and a properly powered ATMEGA328P with a 16MHz clock and a serial connection should work just as well. Assuming either of these, the following circuit is simple:
 
-* Place 3 potentiometers in parallel.
+* Place 3 10KΩ variable resistors in parallel.
 * Connect all of them to 5V and GND, then each to ADC0, ADC2 and ADC4 (check the pinout diagrams).
 * Connect a 100μF capacitor between 5V and GND.
 

@@ -1,10 +1,5 @@
-/*
-*   Used to read a line from the serial port ending with '\n'.
-*   Daniel Robinson 2022
-*/
 #include <list>
 
-//for frees in the destructor
 #define STORE_STRINGS
 
 class SerialPort{
@@ -30,4 +25,18 @@ private:
 
     //string list
     mutable std::list<char *> m_strList;
+};
+
+struct TenBitfield{
+    //split a 32bit integer into 10 bits each, 0b00[a1*ten][a2*ten][a3*ten]
+    TenBitfield operator= (const uint32_t bitsIn){
+        a1 = bitsIn >> 20; //LEFTMOST - first ten bits after "0b00"
+        a2 = bitsIn >> 10; //MIDDLE - next ten bits
+        a3 = bitsIn; //RIGHT - last ten bits
+        return *this;
+    }   
+
+    unsigned int a1 : 10; //0-1023
+    unsigned int a2 : 10; //0-1023
+    unsigned int a3 : 10; //0-1023
 };

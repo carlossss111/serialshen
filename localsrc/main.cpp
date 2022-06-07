@@ -3,36 +3,36 @@
 #include <stdint.h>
 
 #include "SerialPort.h"
+#include "Volume.h"
 
 #define DEFAULT_PORT "/dev/ttyACM0"
 
-struct tenBitfield{
-    //split a 32bit integer into 10 bits each, 0b00[a1*ten][a2*ten][a3*ten]
-    tenBitfield operator= (const uint32_t& bitsIn){
-        a1 = bitsIn >> 20; //LEFTMOST - first ten bits after "0b00"
-        a2 = bitsIn >> 10; //MIDDLE - next ten bits
-        a3 = bitsIn; //RIGHT - last ten bits
-        return *this;
-    }   
-
-    //assumes incoming has FOUR BYTES
-    unsigned int a1 : 10; //0-1023
-    unsigned int a2 : 10;
-    unsigned int a3 : 10;
-};
+//helper function returns a percentage
+inline int toPercent(int num, int max){
+    float fNum = static_cast<float>(num);
+    fNum /= max;
+    fNum *= 100;
+    return static_cast<int>(fNum);
+}
 
 int main(int argc, char **argv){
     //open serial port
     SerialPort mySerial = (argc > 1) ? argv[1] : DEFAULT_PORT;
 
-    //read the 4 bytes and get the seperated information
-    tenBitfield numField;
+    //declare bitfield and volume
+    TenBitfield serialVals;
+    Volume myVolume;
+
+    //forever read the serial and adjust the volumes
     for(;;){
-        uint32_t foundNum = mySerial.readInt32();
-        numField = foundNum;
-        std::cout << "RAW: " << foundNum;
-        std::cout << " SIZE: " << sizeof(foundNum) << std::endl;
-        std::cout << numField.a1 << ", " << numField.a2;
-        std::cout << ", " << numField.a3 << std::endl;
+        //read serial
+        serialVals = mySerial.readInt32();
+
+        //set application volume
+        int app1 = myVolume.getApplicationNum("spotify");
+        printf("%d%%\n", toPercent(serialVals.a1, 1023));
+        myVolume.setVolume(app1, toPercent(serialVals.a1, 1023));        
     }
+
+    return 0;
 }

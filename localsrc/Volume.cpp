@@ -7,13 +7,14 @@
 
 #define charToInt(num) static_cast<int>(num - 48)
 
+//set the volume by providing a number between 0-100
 void Volume::setVolume(int app, int vol){
-    /*
-    const char command[] = "pactl set-sink-input-volume";
-    char sysStr[40];
-    sprintf(sysStr, "%s %d %d%%", command, app, vol);
+    if(0 > vol || vol > 100)
+        return;
+        
+    char sysStr[42];
+    sprintf(sysStr, "pactl set-sink-input-volume %d %d%%", app, vol);
     system(sysStr);
-    */
 }
 
 //return the "sink number" of an applicatio name, or 0 if not found

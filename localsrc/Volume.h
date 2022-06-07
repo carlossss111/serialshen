@@ -1,7 +1,9 @@
 
 class Volume{
 public:
-    void setVolume(int application, int percentVolume);
-    int getApplicationNum(const char * appName) const;
-private:
+    //set the volume as a percentage
+    void setVolume(int applicationNum, int percentVolume);
+
+    //get the application identifier
+    int getApplicationNum(const char * applicationName) const;
 };
